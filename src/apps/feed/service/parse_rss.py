@@ -48,11 +48,3 @@ class ParseRSS:
     def _parse_rss(url):
         return feedparser.parse(url)
 
-
-"""
-from apps.feed.service.parse_rss import ParseRSS
-from apps.feed.models import Feed
-feed = Feed.objects.first()
-parser = ParseRSS(feed)
-parser.get_posts()
-"""

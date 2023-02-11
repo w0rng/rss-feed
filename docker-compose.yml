@@ -31,6 +31,16 @@ services:
       - app
       - redis
 
+  sheduler:
+    <<: *base-image
+    container_name: sheduler
+    command: python manage.py run_scheduler
+    ports: [ ]
+    depends_on:
+      - app
+      - redis
+      - dramatiq
+
   redis:
     image: redis:alpine
     container_name: redis

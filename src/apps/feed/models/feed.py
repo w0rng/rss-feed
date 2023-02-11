@@ -8,9 +8,9 @@ class Feed(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
     url = models.URLField()
     author = models.ForeignKey(User, on_delete=models.CASCADE, editable=False)
-    last_update = models.DateField(editable=False, auto_now_add=True)
+    last_update = models.DateTimeField(editable=False, auto_now_add=True)
     interval = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(600)],
+        validators=[MinValueValidator(60)],
         help_text="in sec",
         default=600,
     )
