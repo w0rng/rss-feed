@@ -19,5 +19,7 @@ WORKDIR /app
 COPY --from=builder /app/__pypackages__/3.11 /pkgs
 ENV PYTHONPATH "${PYTHONPATH}:/pkgs/lib"
 ENV PATH "${PATH}:/pkgs/bin"
+RUN pip install --force-reinstall pillow lxml regex &&\
+    apk add --no-cache libxml2 libxml2-dev libxslt-dev
 
 COPY src /app

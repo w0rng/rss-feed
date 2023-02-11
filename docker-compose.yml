@@ -1,23 +1,43 @@
 version: "3.8"
 
 services:
-  app:
+  app: &base-image
     build:
       context: .
       args:
         - DEBUG=${DEBUG}
-    container_name: backend
     env_file: .env
     restart: unless-stopped
     volumes:
       - ./src:/app
-      - ./volumes/media:/media
-      - ./volumes/static:/static
+      - media:/media
+      - static:/static
+      - nltk:/root/nltk_data
       - db:/db
+    container_name: backend
     ports:
       - 8000:8000
     command: gunicorn --bind 0.0.0.0:8000 --timeout 600 --log-level debug --reload
       --workers 4 core.wsgi:application
+    depends_on:
+      - redis
+
+  dramatiq:
+    <<: *base-image
+    container_name: dramatiq
+    command: python manage.py rundramatiq
+    ports: []
+    depends_on:
+      - app
+      - redis
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+
 
 volumes:
   db:
+  media:
+  static:
+  nltk:

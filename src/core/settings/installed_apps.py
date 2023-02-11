@@ -1,6 +1,7 @@
 from django.conf import settings
 
 INSTALLED_APPS = [
+    "django_dramatiq",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
