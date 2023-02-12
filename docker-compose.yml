@@ -1,6 +1,18 @@
 version: "3.8"
 
 services:
+  db:
+    image: postgres:13.10-alpine
+    container_name: db
+    volumes:
+      - db:/var/lib/postgresql/data
+    env_file:
+      - .env
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+
   app: &base-image
     build:
       context: .
@@ -13,7 +25,6 @@ services:
       - media:/media
       - static:/static
       - nltk:/root/nltk_data
-      - db:/db
     container_name: backend
     ports:
       - 8000:8000
@@ -21,6 +32,7 @@ services:
       --workers 4 core.wsgi:application
     depends_on:
       - redis
+      - db
 
   dramatiq:
     <<: *base-image
@@ -30,6 +42,7 @@ services:
     depends_on:
       - app
       - redis
+      - db
 
   sheduler:
     <<: *base-image
@@ -40,10 +53,7 @@ services:
       - app
       - redis
       - dramatiq
-
-  redis:
-    image: redis:alpine
-    container_name: redis
+      - db
 
 
 volumes:
