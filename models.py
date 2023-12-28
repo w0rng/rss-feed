@@ -36,19 +36,28 @@ class Article(BaseModel):
 
     @classmethod
     def parse(cls, url: str, feed: int):
-        domain = urllib3.util.parse_url(url).host
-        summery = requests.get(f'https://functions.yandexcloud.net/d4et1vtk7puk3hij7th2?url={url}').json()
-        if 'paragraphs' not in summery:
-            return
-        newspaper = requests.get(f'https://functions.yandexcloud.net/d4e09pp7rcsn53mvf23j?url={url}').json()
-        tags = [domain]
-        paragraphs = '__'.join(summery['paragraphs'])
-        tags = '__'.join(tags)
-        return Article.create(url=url, title=summery['title'], paragraphs=paragraphs, image=newspaper['image'],
-                              tags=tags, feed=feed, created_at=datetime.now())
+        try:
+            domain = urllib3.util.parse_url(url).host
+            summery = requests.get(f'https://functions.yandexcloud.net/d4et1vtk7puk3hij7th2?url={url}').json()
+            if 'paragraphs' not in summery:
+                return
+            newspaper = requests.get(f'https://functions.yandexcloud.net/d4e09pp7rcsn53mvf23j?url={url}').json()
+            tags = [domain]
+            paragraphs = '__'.join(summery['paragraphs'])
+            tags = '__'.join(tags)
+            return Article.create(url=url, title=summery['title'], paragraphs=paragraphs, image=newspaper['image'],
+                                  tags=tags, feed=feed, created_at=datetime.now())
+        except:  # noqa: E722
+            print(f"error parse article {url}")
 
 
 class Read(BaseModel):
+    article = pw.ForeignKeyField(Article, backref='reads')
+    user = pw.CharField()
+    created_at = pw.DateTimeField()
+
+
+class Save(BaseModel):
     article = pw.ForeignKeyField(Article, backref='reads')
     user = pw.CharField()
     created_at = pw.DateTimeField()

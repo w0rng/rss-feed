@@ -24,6 +24,11 @@
         .card:hover {
             transform: scale(1.02);
             transition: all 0.2s;
+            opacity: 1;
+        }
+
+        .read {
+            opacity: 0.5;
         }
 
         .card:hover > .card-body > .card-title {
@@ -62,10 +67,12 @@
 
 <script>
     let processed = [];
+    const url = document.URL;
+    const path = url.split('/')[url.split('/').length - 1];
 
     function isElementInViewport(el) {
         const rect = el.getBoundingClientRect();
-        return rect.y < -rect.height;
+        return rect.y < -rect.height && path !== 'bookmarks';
     }
 
     // Функция для отправки запроса при прокрутке карточки
@@ -77,7 +84,7 @@
                     return;
                 }
                 fetch('/article/' + card.id + "/read");
-                card.style.opacity = 0.5;
+                card.classList.add("read")
                 processed.push(card.id);
             }
         });
