@@ -18,16 +18,12 @@
             transition: all 0.5s;
             transform: translateZ(0);
             border-radius: 30px;
-            overflow: hidden; /* Добавлено для перехода эффекта */
+            overflow: hidden;
         }
 
         .card:hover {
             transform: scale(1.02);
             transition: all 0.2s;
-        }
-
-        .card:hover > .card-body > .card-title {
-            text-decoration: underline;
         }
 
         .card-img-top {
@@ -40,19 +36,10 @@
             margin-bottom: 6rem !important;
         }
 
-        .card-body {
-            padding: 20px; /* Добавлено для улучшения читаемости текста */
-        }
-
         .position-relative {
             position: relative;
         }
 
-        .badge-on-image {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-        }
     </style>
     <title>{{ title }}</title>
     {{ turbo() }}
@@ -62,29 +49,35 @@
 
 <div class="container cards-group">
     <turbo-frame id="article_{{ article.id }}">
-        <a href="{{ article.url }}" class="text-decoration-none">
-            <div class="card mb-5" id="{{ article.id }}">
-                <div class="position-relative">
-                    <img src="{{ article.image }}" class="card-img-top">
-                    <div class="position-absolute bottom-0 start-0">
-                        {% for tag in article.tags %}
+        <div class="card mb-5" id="{{ article.id }}">
+            <div class="position-relative">
+                <img src="{{ article.image }}" class="card-img-top">
+                <div class="position-absolute bottom-0 start-0">
+                    {% for tag in article.tags %}
+                        <a href="/?tag={{ tag }}" class="link-dark link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" target="_top">
                             <span class="badge bg-secondary col">{{ tag }}</span>
-                        {% endfor %}
-                    </div>
-                    <span class="badge bg-primary position-absolute bottom-0 end-0">
-                                Просмотры: {{ article.count_read }}
-                        </span>
+                        </a>
+                    {% endfor %}
                 </div>
-                <div class="card-body">
-                    <h2 class="card-title mb-4">{{ article.title }}</h2>
-                    <ul class="card-text">
-                        {% for paragraph in article.paragraphs %}
-                            <li class="mb-2">{{ paragraph }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
+                <span class="badge bg-primary position-absolute bottom-0 end-0">
+                        Просмотры: {{ article.count_read }}
+                    </span>
             </div>
-        </a>
+            <div class="card-body">
+                <a href="{{ article.url }}"
+                   class="link-dark link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover"
+                   target="_blank">
+                    <h2 class="card-title mb-4">{{ article.title }}</h2>
+                </a>
+                <ul class="card-text">
+                    {% for paragraph in article.paragraphs %}
+                        <li class="mb-2">{{ paragraph }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+        </div>
+
     </turbo-frame>
 </div>
 </body>

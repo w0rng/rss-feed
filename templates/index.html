@@ -40,19 +40,6 @@
             margin-bottom: 6rem !important;
         }
 
-        .card-body {
-            padding: 20px; /* Добавлено для улучшения читаемости текста */
-        }
-
-        .position-relative {
-            position: relative;
-        }
-
-        .badge-on-image {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-        }
     </style>
 
     {{ turbo() }}
@@ -60,7 +47,7 @@
 <body>
 
 
-<div class="container cards-group mt-5">
+<div class="container-lg cards-group mt-5">
     {% for article in articles %}
         {% with article=article %}
             <turbo-frame id="article_{{ article.id }}" src="/article/{{ article.id }}">
@@ -68,33 +55,37 @@
             </turbo-frame>
         {% endwith %}
     {% endfor %}
+    {% if not articles %}
+        <h1 class="text-center">Новости кончились. Возможно, скоро будут новые</h1>
+    {% endif %}
 </div>
 
-        <script>
-            let processed = [];
-            function isElementInViewport(el) {
-                const rect = el.getBoundingClientRect();
-                return rect.y < -rect.height;
-            }
+<script>
+    let processed = [];
 
-            // Функция для отправки запроса при прокрутке карточки
-            function sendRequestOnScroll(event) {
-                const cardToWatch = document.getElementsByClassName('card'); // Замените 'card2' на нужный ID карточки
-                Array.from(cardToWatch).forEach(function (card) {
-                    if (isElementInViewport(card)) {
-                        if (processed.includes(card.id)) {
-                            return;
-                        }
-                        fetch('/article/' + card.id + "/read");
-                        card.style.opacity = 0.5;
-                        processed.push(card.id);
-                    }
-                });
-            }
+    function isElementInViewport(el) {
+        const rect = el.getBoundingClientRect();
+        return rect.y < -rect.height;
+    }
 
-            // Добавляем обработчик события прокрутки
-            window.addEventListener('scroll', sendRequestOnScroll);
-        </script>
+    // Функция для отправки запроса при прокрутке карточки
+    function sendRequestOnScroll(event) {
+        const cardToWatch = document.getElementsByClassName('card'); // Замените 'card2' на нужный ID карточки
+        Array.from(cardToWatch).forEach(function (card) {
+            if (isElementInViewport(card)) {
+                if (processed.includes(card.id)) {
+                    return;
+                }
+                fetch('/article/' + card.id + "/read");
+                card.style.opacity = 0.5;
+                processed.push(card.id);
+            }
+        });
+    }
+
+    // Добавляем обработчик события прокрутки
+    window.addEventListener('scroll', sendRequestOnScroll);
+</script>
 
 </body>
 </html>
