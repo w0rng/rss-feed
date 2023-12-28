@@ -32,7 +32,7 @@ def feed():
             continue
         articles.append(article)
     resp = make_response(render_template('index.html', articles=articles))
-    resp.set_cookie('userID', user)
+    resp.set_cookie('userID', user, max_age=60*60*24*365*2)
     return resp
 
 
