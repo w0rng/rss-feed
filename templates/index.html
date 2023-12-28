@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <style>
+        body {
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+
+        .card {
+            -webkit-transition: all 0.1s linear;
+            box-shadow: 10px 10px 30px #CCC;
+            transition: all 0.5s;
+            transform: translateZ(0);
+            border-radius: 30px;
+            overflow: hidden; /* Добавлено для перехода эффекта */
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+            transition: all 0.2s;
+        }
+
+        .card:hover > .card-body > .card-title {
+            text-decoration: underline;
+        }
+
+        .card-img-top {
+            border-radius: 30px 30px 0 0;
+            max-height: 300px;
+            object-fit: cover;
+        }
+
+        .mb-5 {
+            margin-bottom: 6rem !important;
+        }
+
+        .card-body {
+            padding: 20px; /* Добавлено для улучшения читаемости текста */
+        }
+
+        .position-relative {
+            position: relative;
+        }
+
+        .badge-on-image {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+    </style>
+
+    {{ turbo() }}
+</head>
+<body>
+
+
+<div class="container cards-group mt-5">
+    {% for article in articles %}
+        {% with article=article %}
+            <turbo-frame id="article_{{ article.id }}" src="/article/{{ article.id }}">
+                {{ article.title }}
+            </turbo-frame>
+        {% endwith %}
+    {% endfor %}
+</div>
+
+        <script>
+            let processed = [];
+            function isElementInViewport(el) {
+                const rect = el.getBoundingClientRect();
+                return rect.y < -rect.height;
+            }
+
+            // Функция для отправки запроса при прокрутке карточки
+            function sendRequestOnScroll(event) {
+                const cardToWatch = document.getElementsByClassName('card'); // Замените 'card2' на нужный ID карточки
+                Array.from(cardToWatch).forEach(function (card) {
+                    if (isElementInViewport(card)) {
+                        if (processed.includes(card.id)) {
+                            return;
+                        }
+                        fetch('/article/' + card.id + "/read");
+                        card.style.opacity = 0.5;
+                        processed.push(card.id);
+                    }
+                });
+            }
+
+            // Добавляем обработчик события прокрутки
+            window.addEventListener('scroll', sendRequestOnScroll);
+        </script>
+
+</body>
+</html>
