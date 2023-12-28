@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <style>
+        body {
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+
+</head>
+<body>
+
+
+<div class="container cards-group mt-5">
+    {% for feed in feeds %}
+        <div class="row g-3">
+            <form class="mb-5 col-10" action="/feeds/{{ feed.id }}/update" method="post">
+                <div class="row">
+                    <input value="{{ feed.url }}" class="form-control col" name="url">
+                    <button class="btn btn-primary col-2" type="submit">Сохранить</button>
+                </div>
+            </form>
+            <form class="mb-5 col-2" action="/feeds/{{ feed.id }}/delete" method="post">
+                <button class="btn btn-primary" type="submit">Удалить</button>
+            </form>
+        </div>
+    {% endfor %}
+    <form class="mb-5 col-10" action="/feeds/create" method="post">
+        <div class="row">
+            <input class="form-control col" name="url">
+            <button class="btn btn-primary col-2" type="submit">Добавить</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

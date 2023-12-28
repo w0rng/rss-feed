@@ -7,3 +7,9 @@ services:
       - "80:80"
     volumes:
       - ./db:/app/db
+
+  scheduler:
+    build: .
+    command: [ "python","-u", "scheduler.py" ]
+    volumes:
+      - ./db:/app/db
