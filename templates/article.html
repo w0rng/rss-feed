@@ -51,7 +51,9 @@
     <turbo-frame id="article_{{ article.id }}">
         <div class="card mb-5" id="{{ article.id }}">
             <div class="position-relative">
+            <div style="min-height: 100px">
                 <img src="{{ article.image }}" class="card-img-top">
+            </div>
                 <div class="position-absolute top-0 end-0">
                     <a class="btn btn-warning" href="/article/{{ article.id }}/save">
                         {% if article.saved %}
@@ -90,7 +92,6 @@
                     {% endfor %}
                 </ul>
             </div>
-
         </div>
 
     </turbo-frame>

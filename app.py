@@ -22,16 +22,8 @@ def feed():
 
     read = Read.select().where(Read.user == user)
     read = [read.article.id for read in read]
-    articles_raw = Article.select().where(Article.id.not_in(read)).order_by(
-        Article.created_at.desc()).limit(100)
-    tag = request.args.get('tag')
-    articles = []
-    for article in articles_raw:
-        article.paragraphs = article.paragraphs.split('__')
-        article.tags = article.tags.split('__')
-        if tag and tag not in article.tags:
-            continue
-        articles.append(article)
+    articles = Article.select(Article.id).where(Article.id.not_in(read)).order_by(
+        Article.created_at.desc())
     resp = make_response(render_template('index.html', articles=articles))
     resp.set_cookie('userID', user, max_age=60 * 60 * 24 * 365 * 2)
     return resp
