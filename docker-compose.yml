@@ -29,13 +29,6 @@ services:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
 
-#  migrate:
-#    build: .
-#    command: [ "python","-u", "migrate.py" ]
-#    volumes:
-#      - .:/app
-#    depends_on:
-#      - db
 
 volumes:
   postgres_data:
