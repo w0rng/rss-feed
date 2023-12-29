@@ -46,6 +46,31 @@
             margin-bottom: 6rem !important;
         }
 
+        @media only screen and (max-width: 1000px) {
+            .card-title {
+                font-size: 350%;
+            }
+
+            .card-text {
+                font-size: 300%;
+            }
+
+            .card-img-top {
+                max-height: 600px;
+            }
+
+            .bookmark {
+                width: 100px;
+                height: 100px;
+                font-size: 300%;
+            }
+
+            .bookmark>svg {
+                height: 32px;
+                width: 24px;
+            }
+        }
+
     </style>
     <script
             src="{% static 'turbo/js/turbo.min.js' %}"
