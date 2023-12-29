@@ -4,19 +4,15 @@ services:
   web:
     build: .
     ports:
-      - "80:80"
-    volumes:
-      - .:/app
-    command: [ "python","-u", "app.py" ]
+      - "80:8000"
+    command: [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]
     restart: unless-stopped
     depends_on:
       - db
 
   scheduler:
     build: .
-    command: [ "python","-u", "scheduler.py" ]
-    volumes:
-      - .:/app
+    command: [ "python", "manage.py", "update_feeds" ]
     restart: unless-stopped
     depends_on:
       - db
@@ -33,13 +29,13 @@ services:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
 
-  migrate:
-    build: .
-    command: [ "python","-u", "migrate.py" ]
-    volumes:
-      - .:/app
-    depends_on:
-      - db
+#  migrate:
+#    build: .
+#    command: [ "python","-u", "migrate.py" ]
+#    volumes:
+#      - .:/app
+#    depends_on:
+#      - db
 
 volumes:
   postgres_data:

@@ -1,9 +1,8 @@
-FROM python:3.9.6
+FROM python:3.12.0-alpine
 
 WORKDIR /app
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY . .
-
+COPY ./src/ .

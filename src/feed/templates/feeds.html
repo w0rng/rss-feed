@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container cards-group mt-5">
+        {% for feed in feeds %}
+            <div class="row g-3">
+                <form class="mb-5 col-10" action="/feeds/{{ feed.id }}/update" method="post">
+                    <div class="row">
+                        <input value="{{ feed.url }}" class="form-control col" name="url">
+                        <button class="btn btn-primary col-2" type="submit">Сохранить</button>
+                    </div>
+                </form>
+                <form class="mb-5 col-2" action="/feeds/{{ feed.id }}/delete" method="post">
+                    <button class="btn btn-primary" type="submit">Удалить</button>
+                </form>
+            </div>
+        {% endfor %}
+        <form class="mb-5 col-10" action="/feeds/create" method="post">
+            <div class="row">
+                <input class="form-control col" name="url">
+                <button class="btn btn-primary col-2" type="submit">Добавить</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container-lg cards-group mt-5">
+        {% for article in articles %}
+            {% with article=article %}
+                <turbo-frame id="article_{{ article }}" src="/article/{{ article }}" class="turbo" loading="lazy">
+                    <div class="card mb-5" aria-hidden="true">
+                        <div class="card-img-top placeholder" style="height: 300px"></div>
+                        <div class="card-body">
+                            <h5 class="card-title placeholder-glow">
+                                <span class="placeholder col-6"></span>
+                            </h5>
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-7"></span>
+                                <span class="placeholder col-4"></span>
+                                <span class="placeholder col-6"></span>
+                                <span class="placeholder col-4"></span>
+                                <span class="placeholder col-7"></span>
+                                <span class="placeholder col-8"></span>
+                                <span class="placeholder col-4"></span>
+                                <span class="placeholder col-7"></span>
+                                <span class="placeholder col-4"></span>
+                                <span class="placeholder col-4"></span>
+                                <span class="placeholder col-6"></span>
+                                <span class="placeholder col-8"></span>
+                                <span class="placeholder col-6"></span>
+                                <span class="placeholder col-4"></span>
+                                <span class="placeholder col-8"></span>
+                            </p>
+                        </div>
+                    </div>
+                </turbo-frame>
+            {% endwith %}
+        {% endfor %}
+        {% if not articles %}
+            <h1 class="text-center">Новости кончились. Возможно, скоро будут новые</h1>
+        {% endif %}
+    </div>
+
+    <script>
+        let processed = [];
+        const url = document.URL;
+        const path = url.split('/')[url.split('/').length - 1];
+
+        function isElementInViewport(el) {
+            const rect = el.getBoundingClientRect();
+            return rect.y < -rect.height && path !== 'bookmarks';
+        }
+
+        // Функция для отправки запроса при прокрутке карточки
+        function sendRequestOnScroll(event) {
+            const cardToWatch = document.getElementsByClassName('card'); // Замените 'card2' на нужный ID карточки
+            Array.from(cardToWatch).forEach(function (card) {
+                if (isElementInViewport(card)) {
+                    if (processed.includes(card.id)) {
+                        return;
+                    }
+                    fetch('/article/' + card.id + "/read");
+                    card.classList.add("read")
+                    processed.push(card.id);
+                }
+            });
+        }
+
+        {% url 'bookmarks' as bookmarks_url %}
+        {% if request.path != bookmarks_url %}
+            window.addEventListener('scroll', sendRequestOnScroll);
+        {% endif %}
+    </script>
+{% endblock %}
