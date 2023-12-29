@@ -1,41 +1,32 @@
-from datetime import datetime
-
-import peewee as pw
 import requests
 import urllib3
 from feedparser import parse
-
-db = pw.SqliteDatabase('db/my_database.db')
-
-
-class BaseModel(pw.Model):
-    class Meta:
-        database = db
+from tortoise import fields
+from tortoise.models import Model
 
 
-class Feed(BaseModel):
-    url = pw.CharField(unique=True)
+class Feed(Model):
+    id = fields.IntField(pk=True)
+    url = fields.CharField(max_length=10240, unique=True)
 
-    def upgrade(self):
+    async def upgrade(self):
         articles = parse(self.url)['entries']
         for article in articles:
-            try:
-                Article.get(url=article.link)
-            except Article.DoesNotExist:
-                Article.parse(article.link, self.id)
+            if not await Article.filter(url=article.link).exists():
+                await Article.parse(article.link, self.id)
 
 
-class Article(BaseModel):
-    url = pw.CharField(unique=True)
-    title = pw.CharField()
-    paragraphs = pw.TextField()
-    image = pw.CharField()
-    tags = pw.TextField()
-    feed = pw.ForeignKeyField(Feed, backref='articles')
-    created_at = pw.DateTimeField()
+class Article(Model):
+    url = fields.CharField(max_length=10240, unique=True)
+    title = fields.TextField()
+    paragraphs = fields.JSONField()
+    image = fields.TextField()
+    tags = fields.JSONField()
+    feed = fields.ForeignKeyField('models.Feed', related_name='articles')
+    created_at = fields.DatetimeField(auto_now_add=True)
 
     @classmethod
-    def parse(cls, url: str, feed: int):
+    async def parse(cls, url: str, feed: int):
         try:
             domain = urllib3.util.parse_url(url).host
             summery = requests.get(f'https://functions.yandexcloud.net/d4et1vtk7puk3hij7th2?url={url}').json()
@@ -43,21 +34,20 @@ class Article(BaseModel):
                 return
             newspaper = requests.get(f'https://functions.yandexcloud.net/d4e09pp7rcsn53mvf23j?url={url}').json()
             tags = [domain]
-            paragraphs = '__'.join(summery['paragraphs'])
-            tags = '__'.join(tags)
-            return Article.create(url=url, title=summery['title'], paragraphs=paragraphs, image=newspaper['image'],
-                                  tags=tags, feed=feed, created_at=datetime.now())
+            return await Article.create(url=url, title=summery['title'], paragraphs=paragraphs,
+                                        image=newspaper['image'],
+                                        tags=tags, feed=feed, created_at=datetime.now())
         except:  # noqa: E722
             print(f"error parse article {url}")
 
 
-class Read(BaseModel):
-    article = pw.ForeignKeyField(Article, backref='reads')
-    user = pw.CharField()
-    created_at = pw.DateTimeField()
+class Read(Model):
+    article = fields.ForeignKeyField('models.Article', related_name='reads')
+    user = fields.TextField()
+    created_at = fields.DatetimeField(auto_now_add=True)
 
 
-class Save(BaseModel):
-    article = pw.ForeignKeyField(Article, backref='reads')
-    user = pw.CharField()
-    created_at = pw.DateTimeField()
+class Bookmark(Model):
+    article = fields.ForeignKeyField('models.Article', related_name='bookmarks')
+    user = fields.TextField()
+    created_at = fields.DatetimeField(auto_now_add=True)

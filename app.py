@@ -6,7 +6,7 @@ import flask
 from flask import Flask, render_template, make_response, request
 from turbo_flask import Turbo
 
-from models import db, Article, Feed, Read, Save
+from models_old import db, Article, Feed, Read, Save
 
 app = Flask(__name__)
 turbo = Turbo(app)

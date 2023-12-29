@@ -3,7 +3,7 @@ from logging import getLogger
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
 
-from models import Feed
+from models_old import Feed
 
 logger = getLogger(__name__)
 

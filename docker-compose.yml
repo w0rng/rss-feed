@@ -6,12 +6,40 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./db:/app/db
+      - .:/app
+    command: [ "python","-u", "app.py" ]
     restart: unless-stopped
+    depends_on:
+      - db
 
   scheduler:
     build: .
     command: [ "python","-u", "scheduler.py" ]
     volumes:
-      - ./db:/app/db
+      - .:/app
     restart: unless-stopped
+    depends_on:
+      - db
+
+  db:
+    image: postgres:12.1-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  migrate:
+    build: .
+    command: [ "python","-u", "migrate.py" ]
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
