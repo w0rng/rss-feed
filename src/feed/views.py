@@ -11,7 +11,10 @@ class FeedView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user_id
-        context["articles"] = Article.objects.exclude(reads__user=user).order_by("-created_at").values_list("id", flat=True)
+        context["articles"] = (Article.objects.
+                               exclude(reads__user=user).
+                               order_by("-created_at").
+                               values_list("id", flat=True)[:100])
         return context
 
 
@@ -21,7 +24,9 @@ class BookmarksView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user_id
-        context["articles"] = Article.objects.filter(bookmarks__user=user).order_by("-created_at").values_list('id', flat=True)
+        context["articles"] = (Article.objects.
+                               filter(bookmarks__user=user).
+                               order_by("-created_at").values_list('id', flat=True))
         return context
 
 

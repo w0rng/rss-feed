@@ -15,7 +15,7 @@ class Command(BaseCommand):
         scheduler = BlockingScheduler()
         scheduler.add_job(
             self.upgrade_feeds,
-            CronTrigger.from_crontab("* * * * *"),
+            CronTrigger.from_crontab("*/10 * * * *"),
         )
         try:
             scheduler.start()
