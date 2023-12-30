@@ -3,7 +3,7 @@ import re
 from urllib.parse import urlparse
 
 import requests
-from django.db import models
+from django.db import models, IntegrityError
 from feedparser import parse
 
 CLEANR = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
@@ -52,20 +52,26 @@ class Article(models.Model):
 
         tags = [urlparse(article.link).netloc]
 
-        if date := article.get('published'):
+        try:
+            date = article['published']
             date = datetime.strptime(date, "%a, %d %b %Y %H:%M:%S %z")
-        else:
+        except:
             date = datetime.now()
 
-        obj, created = cls.objects.get_or_create(
-            url=article.link,
-            title=article.get('title', title),
-            paragraphs=paragraphs,
-            image=newspaper.get("image"),
-            tags=tags,
-            feed=feed,
-            created_at=date,
-        )
+        try:
+            obj, created = cls.objects.get_or_create(
+                url=article.link,
+                title=article.get('title', title),
+                paragraphs=paragraphs,
+                image=newspaper.get("image"),
+                tags=tags,
+                feed=feed,
+                created_at=date,
+            )
+        except IntegrityError as error:
+            print(article.link, error, flush=True)
+            return
+
         if created:
             print("add", obj, flush=True)
         else:
