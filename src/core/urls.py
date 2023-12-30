@@ -10,5 +10,5 @@ urlpatterns = [
     path("article/<int:pk>", ArticleDetailView.as_view(), name="article_detail"),
     path("article/<int:pk>/save", SaveDetailView.as_view(), name="article_save"),
     path("article/<int:pk>/read", ArticleVeiwedView.as_view(), name="article_read"),
-    path("rss/", RssView(), name="rss")
+    path("rss/", RssView(), name="rss"),
 ]

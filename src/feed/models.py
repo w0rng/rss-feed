@@ -6,7 +6,7 @@ import requests
 from django.db import models, IntegrityError
 from feedparser import parse
 
-CLEANR = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')
+CLEANR = re.compile(r"<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});")
 SPLITTER = re.compile(r"<\s?br\s?/?>")
 
 
@@ -46,14 +46,12 @@ class Article(models.Model):
             print(f"not found paragraphs for {article.link}", flush=True)
             return
 
-        newspaper = requests.get(
-            f"https://functions.yandexcloud.net/d4e09pp7rcsn53mvf23j?url={article.link}"
-        ).json()
+        newspaper = requests.get(f"https://functions.yandexcloud.net/d4e09pp7rcsn53mvf23j?url={article.link}").json()
 
         tags = [urlparse(article.link).netloc]
 
         try:
-            date = article['published']
+            date = article["published"]
             date = datetime.strptime(date, "%a, %d %b %Y %H:%M:%S %z")
         except:
             date = datetime.now()
@@ -61,7 +59,7 @@ class Article(models.Model):
         try:
             obj, created = cls.objects.get_or_create(
                 url=article.link,
-                title=article.get('title', title),
+                title=article.get("title", title),
                 paragraphs=paragraphs,
                 image=newspaper.get("image"),
                 tags=tags,
