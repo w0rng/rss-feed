@@ -1,3 +1,7 @@
+from collections import defaultdict
+from itertools import chain
+import random
+
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import TemplateView, DetailView
@@ -11,9 +15,16 @@ class FeedView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user_id
-        context["articles"] = (
-            Article.objects.exclude(reads__user=user).order_by("-created_at").values_list("id", flat=True)[:100]
-        )
+        articles = Article.objects.exclude(reads__user=user).order_by("-created_at").values_list("id", "feed__pk")
+        articles_by_feed = defaultdict(list)
+        for article, feed in articles:
+            if len(articles_by_feed[feed]) > 10:
+                continue
+            articles_by_feed[feed].append(article)
+        result = list(chain.from_iterable(articles_by_feed.values()))
+        random.shuffle(result)
+        context["articles"] = result[:100]
+
         return context
 
 
