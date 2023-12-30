@@ -6,33 +6,32 @@ from .models import Article, Read, Bookmark
 
 
 class FeedView(TemplateView):
-    template_name = 'index.html'
+    template_name = "index.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user_id
-        context["articles"] = (Article.objects.
-                               exclude(reads__user=user).
-                               order_by("-created_at").
-                               values_list("id", flat=True)[:100])
+        context["articles"] = (
+            Article.objects.exclude(reads__user=user).order_by("-created_at").values_list("id", flat=True)[:100]
+        )
         return context
 
 
 class BookmarksView(TemplateView):
-    template_name = 'index.html'
+    template_name = "index.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user_id
-        context["articles"] = (Article.objects.
-                               filter(bookmarks__user=user).
-                               order_by("-created_at").values_list('id', flat=True))
+        context["articles"] = (
+            Article.objects.filter(bookmarks__user=user).order_by("-created_at").values_list("id", flat=True)
+        )
         return context
 
 
 class ArticleDetailView(DetailView):
     model = Article
-    template_name = 'article.html'
+    template_name = "article.html"
 
     def get_object(self, queryset=None):
         user = self.request.user_id
@@ -43,7 +42,7 @@ class ArticleDetailView(DetailView):
 
 class SaveDetailView(ArticleDetailView):
     model = Article
-    template_name = 'article.html'
+    template_name = "article.html"
 
     def post(self, request, *args, **kwargs):
         user = self.request.user_id

@@ -1,7 +1,6 @@
 from logging import getLogger
+from time import sleep
 
-from apscheduler.schedulers.blocking import BlockingScheduler
-from apscheduler.triggers.cron import CronTrigger
 from django.core.management.base import BaseCommand
 
 from feed.models import Feed
@@ -12,17 +11,14 @@ logger = getLogger(__name__)
 class Command(BaseCommand):
     def handle(self, *args, **options):
         logger.warning("Starting scheduler")
-        scheduler = BlockingScheduler()
-        scheduler.add_job(
-            self.upgrade_feeds,
-            CronTrigger.from_crontab("*/10 * * * *"),
-        )
-        try:
-            scheduler.start()
-        except KeyboardInterrupt:
-            scheduler.shutdown()
+        while True:
+            self.upgrade_feeds()
+            sleep(10 * 60)
 
     def upgrade_feeds(self):
         for feed in Feed.objects.all():
             logger.warning(f"Updating feed {feed.id}")
-            feed.load_articles()
+            try:
+                feed.load_articles()
+            except Exception as e:
+                logger.warning(f"Error when update feed {feed.pk}", e)
