@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.views.generic import TemplateView, DetailView
 
 from .models import Article, Read, Bookmark
+from django.contrib.syndication.views import Feed
 
 
 class FeedView(TemplateView):
@@ -72,3 +73,22 @@ class ArticleVeiwedView(DetailView):
         article = self.get_object()
         Read.objects.get_or_create(user=user, article=article)
         return HttpResponseRedirect(reverse("article_detail", args=(article.pk,)))
+
+
+class RssView(Feed):
+    title = "w0rng feed"
+    link = "/rss/"
+    description = "w0rng feed"
+    limit = 20
+
+    def items(self):
+        return Article.objects.order_by("-created_at")[: self.limit]
+
+    def item_title(self, item):
+        return item.title
+
+    def item_description(self, item):
+        return "\n".join(item.paragraphs)
+
+    def item_link(self, item):
+        return item.url
