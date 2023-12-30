@@ -5,7 +5,13 @@ from .models import Feed, Article, Read, Bookmark
 
 @admin.register(Feed)
 class FeedAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("title", "articles_count", "views")
+
+    def articles_count(self, obj):
+        return obj.articles.count()
+
+    def views(self, obj: Feed):
+        return sum([a.count_read for a in obj.articles.all()])
 
 
 @admin.register(Article)
@@ -15,9 +21,9 @@ class ArticleAdmin(admin.ModelAdmin):
 
 @admin.register(Read)
 class ReadAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("user", "article")
 
 
 @admin.register(Bookmark)
 class BookmarkAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("user", "article")
