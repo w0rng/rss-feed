@@ -1,30 +1,36 @@
+import random
 from collections import defaultdict
 from itertools import chain
-import random
 
+from django.contrib.syndication.views import Feed as RSSFeedView
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import TemplateView, DetailView
 
-from .models import Article, Read, Bookmark
-from django.contrib.syndication.views import Feed
+from .models import Article, Read, Bookmark, Feed
 
 
 class FeedView(TemplateView):
     template_name = "index.html"
+    MAX_ARTICLES = 100
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         user = self.request.user_id
         articles = Article.objects.exclude(reads__user=user).order_by("-created_at").values_list("id", "feed__pk")
+
         articles_by_feed = defaultdict(list)
+        max_count_per_feed = self.MAX_ARTICLES // Feed.objects.count()
+
         for article, feed in articles:
-            if len(articles_by_feed[feed]) > 10:
+            if len(articles_by_feed[feed]) >= max_count_per_feed:
                 continue
             articles_by_feed[feed].append(article)
+
         result = list(chain.from_iterable(articles_by_feed.values()))
         random.shuffle(result)
-        context["articles"] = result[:100]
+        context["articles"] = result[: self.MAX_ARTICLES]
 
         return context
 
@@ -75,7 +81,7 @@ class ArticleVeiwedView(DetailView):
         return HttpResponseRedirect(reverse("article_detail", args=(article.pk,)))
 
 
-class RssView(Feed):
+class RssView(RSSFeedView):
     title = "w0rng feed"
     link = "/rss/"
     description = "w0rng feed"
