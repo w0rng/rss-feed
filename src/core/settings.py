@@ -6,7 +6,7 @@ SECRET_KEY = "django-insecure-w9@$e3@1x!s+xyu*r0ra&^n3m73xs+&xrl!um8e3iu$(wixl8u
 
 DEBUG = True
 
-ALLOWED_HOSTS = ["feed.w0rng.ru", "localhost"]
+ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = ["https://feed.w0rng.ru", "http://localhost"]
 
 INSTALLED_APPS = [
