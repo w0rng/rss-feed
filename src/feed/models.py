@@ -96,6 +96,16 @@ class Article(models.Model):
     def count_read(self):
         return self.reads.count()
 
+    @property
+    def is_video(self):
+        return "youtube" in self.url
+
+    @property
+    def video_url(self):
+        if "youtube" in self.url:
+            return self.url.replace("watch?v=", "embed/")
+        return self.url
+
 
 class Read(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="reads")

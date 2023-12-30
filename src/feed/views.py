@@ -17,11 +17,16 @@ class FeedView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        context["articles"] = self.articles()
+
+        return context
+
+    def articles(self):
         user = self.request.user_id
         articles = Article.objects.exclude(reads__user=user).order_by("-created_at").values_list("id", "feed__pk")
 
         articles_by_feed = defaultdict(list)
-        max_count_per_feed = self.MAX_ARTICLES // Feed.objects.count()
+        max_count_per_feed = self.MAX_ARTICLES // (Feed.objects.count() or 1)
 
         for article, feed in articles:
             if len(articles_by_feed[feed]) >= max_count_per_feed:
@@ -30,9 +35,7 @@ class FeedView(TemplateView):
 
         result = list(chain.from_iterable(articles_by_feed.values()))
         random.shuffle(result)
-        context["articles"] = result[: self.MAX_ARTICLES]
-
-        return context
+        return result[: self.MAX_ARTICLES]
 
 
 class BookmarksView(TemplateView):

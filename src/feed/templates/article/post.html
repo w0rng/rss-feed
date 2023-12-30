@@ -1,0 +1,13 @@
+{% extends "article/base.html" %}
+
+{% block image %}
+    <img src="{{ article.image }}" class="card-img-top" alt="Картинка">
+{% endblock %}
+
+{% block text %}
+    <ul class="card-text">
+        {% for paragraph in article.paragraphs %}
+            <li class="mb-2">{{ paragraph }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
