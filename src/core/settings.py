@@ -4,6 +4,8 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+STATIC_ROOT = "/static/"
+STATIC_URL = "/static/"
 
 SECRET_KEY = "django-insecure-w9@$e3@1x!s+xyu*r0ra&^n3m73xs+&xrl!um8e3iu$(wixl8u"
 
