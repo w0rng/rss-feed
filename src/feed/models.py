@@ -1,9 +1,10 @@
-from datetime import datetime
 import re
+from datetime import datetime
 from urllib.parse import urlparse
 
 import requests
 from django.db import models, IntegrityError
+from django.utils.functional import cached_property
 from feedparser import parse
 
 CLEANR = re.compile(r"<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});")
@@ -31,6 +32,8 @@ class Feed(models.Model):
 
 
 class Article(models.Model):
+    STOP_WORDS = ["курс", "erid", "реклама", "bridge returned error"]
+
     url = models.URLField(unique=True, max_length=10240)
     title = models.TextField()
     paragraphs = models.JSONField()
@@ -105,6 +108,16 @@ class Article(models.Model):
         if "youtube" in self.url:
             return self.url.replace("watch?v=", "embed/")
         return self.url
+
+    @cached_property
+    def is_bad(self):
+        for word in self.STOP_WORDS:
+            if word.lower() in self.title.lower():
+                return True
+            for paragraph in self.paragraphs:
+                if word.lower() in paragraph.lower():
+                    return True
+        return False
 
 
 class Read(models.Model):

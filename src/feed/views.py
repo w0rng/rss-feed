@@ -23,15 +23,17 @@ class FeedView(TemplateView):
 
     def articles(self):
         user = self.request.user_id
-        articles = Article.objects.exclude(reads__user=user).order_by("-created_at").values_list("id", "feed__pk")
+        articles = Article.objects.exclude(reads__user=user).order_by("-created_at").prefetch_related("feed")
 
         articles_by_feed = defaultdict(list)
         max_count_per_feed = self.MAX_ARTICLES // (Feed.objects.count() or 1)
 
-        for article, feed in articles:
-            if len(articles_by_feed[feed]) >= max_count_per_feed:
+        for article in articles:
+            if article.is_bad:
                 continue
-            articles_by_feed[feed].append(article)
+            if len(articles_by_feed[article.feed.pk]) >= max_count_per_feed:
+                continue
+            articles_by_feed[article.feed.pk].append(article.pk)
 
         result = list(chain.from_iterable(articles_by_feed.values()))
         random.shuffle(result)
