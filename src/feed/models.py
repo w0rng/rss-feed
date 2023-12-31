@@ -63,7 +63,7 @@ class Article(models.Model):
         try:
             obj, created = cls.objects.get_or_create(
                 url=article.link,
-                title=article.get("title", title),
+                title=title or paragraphs[0],
                 paragraphs=paragraphs,
                 image=newspaper.get("image"),
                 tags=tags,
@@ -89,7 +89,7 @@ class Article(models.Model):
             return re.sub(CLEANR, "", raw_html)
 
         try:
-            return list(map(cleanhtml, filter(str, re.split(SPLITTER, article.summary)))), None
+            return list(map(cleanhtml, filter(str, re.split(SPLITTER, article.summary)))), article.get("title")
         except:
             return None, None
 
