@@ -7,7 +7,7 @@ services:
       - "80:8000"
     volumes:
       - ./src:/app
-    command: [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]
+    command: [ "gunicorn", "core.wsgi", "--workers", "5", "--bind", "0.0.0.0:8000"]
     restart: unless-stopped
     depends_on:
       - db

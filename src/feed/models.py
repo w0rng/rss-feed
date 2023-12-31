@@ -6,6 +6,7 @@ import requests
 from django.db import models, IntegrityError
 from django.utils.functional import cached_property
 from feedparser import parse
+from loguru import logger
 
 CLEANR = re.compile(r"<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});")
 SPLITTER = re.compile(r"<\s?br\s?/?>")
@@ -16,7 +17,7 @@ class Feed(models.Model):
     title = models.TextField(null=True, default=None, editable=False)
 
     def load_articles(self):
-        print(f"load articles for feed {self.pk}", flush=True)
+        logger.warning(f"load articles for feed {self.pk}")
         feed = parse(self.url)
         if self.title is None:
             self.title = feed.feed.title
@@ -46,7 +47,7 @@ class Article(models.Model):
     def parse(cls, article, feed: Feed):
         paragraphs, title = cls._get_paragraphs(article)
         if paragraphs is None:
-            print(f"not found paragraphs for {article.link}", flush=True)
+            logger.warning(f"not found paragraphs for {article.link}")
             return
 
         newspaper = requests.get(f"https://functions.yandexcloud.net/d4e09pp7rcsn53mvf23j?url={article.link}").json()
@@ -69,14 +70,14 @@ class Article(models.Model):
                 feed=feed,
                 created_at=date,
             )
-        except IntegrityError as error:
-            print(article.link, error, flush=True)
+        except IntegrityError:
+            logger.exception(article.link)
             return
 
         if created:
-            print("add", obj, flush=True)
+            logger.info(f"add {obj}")
         else:
-            print("article alredy exists", obj, flush=True)
+            logger.info(f"article alredy exists {obj}")
 
     @classmethod
     def _get_paragraphs(cls, article) -> tuple[list[str] | None, str | None]:
@@ -111,6 +112,8 @@ class Article(models.Model):
 
     @cached_property
     def is_bad(self):
+        if self.is_video:
+            return False
         for word in self.STOP_WORDS:
             if word.lower() in self.title.lower():
                 return True
