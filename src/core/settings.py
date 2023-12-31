@@ -1,5 +1,8 @@
 from pathlib import Path
 
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-w9@$e3@1x!s+xyu*r0ra&^n3m73xs+&xrl!um8e3iu$(wixl8u"
@@ -88,3 +91,10 @@ USE_TZ = True
 STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+sentry_sdk.init(
+    dsn="https://56a0a6d05df5413d8e4fbdb6bb94fc33@glitchtip.w0rng.ru/11",
+    integrations=[DjangoIntegration()],
+    auto_session_tracking=False,
+    traces_sample_rate=0,
+)
