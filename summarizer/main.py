@@ -9,13 +9,17 @@ app = FastAPI()
 
 @app.get("/")
 def main(url: str) -> dict[str, str | list[str]]:
-    summary_url = requests.post(
-        "https://300.ya.ru/api/sharing-url",
-        json={
-            "article_url": url,
-        },
-        headers={"Authorization": f'OAuth {environ["YANDEX_300_TOKEN"]}'},
-    ).json().get("sharing_url")
+    summary_url = (
+        requests.post(
+            "https://300.ya.ru/api/sharing-url",
+            json={
+                "article_url": url,
+            },
+            headers={"Authorization": f'OAuth {environ["YANDEX_300_TOKEN"]}'},
+        )
+        .json()
+        .get("sharing_url")
+    )
 
     if not summary_url:
         return {"error": "яндекс не смог перевести"}

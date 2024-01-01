@@ -8,11 +8,11 @@ services:
     volumes:
       - ./core:/app
     ports:
-      - "80:8000"
+      - "80:80"
     command: >
       sh -c "python manage.py migrate &&
              python manage.py collectstatic --noinput --clear &&
-             gunicorn settings.wsgi --workers 5 --bind 0.0.0.0:8000"
+             gunicorn settings.wsgi --workers 5 --bind 0.0.0.0:80"
     restart: unless-stopped
     env_file:
       - .env
@@ -44,6 +44,17 @@ services:
       context: .
       dockerfile: docker/newspaper.dockerfile
     restart: unless-stopped
+    env_file:
+      - .env
+
+  telegram:
+    build:
+      context: .
+      dockerfile: docker/telegram.dockerfile
+    restart: unless-stopped
+    depends_on:
+      - web
+      - db
     env_file:
       - .env
 

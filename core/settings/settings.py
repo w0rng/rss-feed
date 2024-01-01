@@ -1,3 +1,4 @@
+from os import getenv
 from pathlib import Path
 
 import sentry_sdk
@@ -7,12 +8,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_ROOT = "/static/"
 STATIC_URL = "/static/"
 
-SECRET_KEY = "django-insecure-w9@$e3@1x!s+xyu*r0ra&^n3m73xs+&xrl!um8e3iu$(wixl8u"
+SECRET_KEY = getenv("SECRET_KEY", "SECRET_KEY")
 
-DEBUG = True
+DEBUG = getenv("DEBUG", "true").lower() == "true"
 
-ALLOWED_HOSTS = ["*"]
-CSRF_TRUSTED_ORIGINS = ["https://feed.w0rng.ru", "http://localhost"]
+ALLOWED_HOSTS = getenv("ALLOWED_HOSTS", "*").split(",")
+CSRF_TRUSTED_ORIGINS = getenv("CSRF_TRUSTED_ORIGINS", "*").split(",")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -101,9 +102,10 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-sentry_sdk.init(
-    dsn="https://56a0a6d05df5413d8e4fbdb6bb94fc33@glitchtip.w0rng.ru/11",
-    integrations=[DjangoIntegration()],
-    auto_session_tracking=False,
-    traces_sample_rate=0,
-)
+if dsn := getenv("SENTRY_DSN"):
+    sentry_sdk.init(
+        dsn=dsn,
+        integrations=[DjangoIntegration()],
+        auto_session_tracking=False,
+        traces_sample_rate=0,
+    )

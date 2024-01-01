@@ -1,3 +1,4 @@
+from os import getenv
 from time import sleep
 
 from django.core.management.base import BaseCommand
@@ -11,7 +12,7 @@ class Command(BaseCommand):
         logger.info("Starting scheduler")
         while True:
             self.upgrade_feeds()
-            sleep(10 * 60)
+            sleep(int(getenv("UPDATE_EVER_SECONDS", 600)))
 
     def upgrade_feeds(self):
         for feed in Feed.objects.all():
