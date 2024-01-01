@@ -42,12 +42,13 @@ def parse_feed():
                     for paragraph in article.description.split("\n"):
                         text += f"- {paragraph}\n"
 
-                    bot.send_message(chat_id=user.user_id, text=text, parse_mode="Markdown", disable_web_page_preview=True)
+                    bot.send_message(
+                        chat_id=user.user_id, text=text, parse_mode="Markdown", disable_web_page_preview=True
+                    )
                     sleep(10)
                 except Exception as e:
                     print(e)
         sleep(600)
-
 
 
 if __name__ == "__main__":
