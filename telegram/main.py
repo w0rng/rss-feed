@@ -34,16 +34,18 @@ def parse_feed():
                     .exists()
                 ):
                     continue
-                print(f"Send article {article.title} to {user.user_id}", flush=True)
-                SentMessage.create(user=user.user_id, message_id=article.link)
+                try:
+                    print(f"Send article {article.title} to {user.user_id}", flush=True)
+                    SentMessage.create(user=user.user_id, message_id=article.link)
 
-                text = f"[{article.title}]({article.link})\n\n"
-                for paragraph in article.description.split("\n"):
-                    text += f"- {paragraph}\n"
+                    text = f"[{article.title}]({article.link})\n\n"
+                    for paragraph in article.description.split("\n"):
+                        text += f"- {paragraph}\n"
 
-                bot.send_message(chat_id=user.user_id, text=text, parse_mode="Markdown", disable_web_page_preview=True)
-                sleep(10)
-        sleep(600)
+                    bot.send_message(chat_id=user.user_id, text=text, parse_mode="Markdown", disable_web_page_preview=True)
+                    sleep(10)
+                except Exception as e:
+                    print(e)
         sleep(600)
 
 
