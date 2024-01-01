@@ -10,7 +10,7 @@ STATIC_URL = "/static/"
 
 SECRET_KEY = getenv("SECRET_KEY", "SECRET_KEY")
 
-DEBUG = getenv("DEBUG", "true").lower() == "true"
+DEBUG = getenv("DEBUG", "false").lower() == "true"
 
 ALLOWED_HOSTS = getenv("ALLOWED_HOSTS", "*").split(",")
 CSRF_TRUSTED_ORIGINS = getenv("CSRF_TRUSTED_ORIGINS", "*").split(",")
