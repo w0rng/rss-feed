@@ -37,7 +37,7 @@ MIDDLEWARE = [
     "feed.middlewares.UserIdMiddleware",
 ]
 
-ROOT_URLCONF = "core.urls"
+ROOT_URLCONF = "settings.urls"
 
 TEMPLATES = [
     {
@@ -61,7 +61,7 @@ STORAGES = {
     },
 }
 
-WSGI_APPLICATION = "core.wsgi.application"
+WSGI_APPLICATION = "settings.wsgi.application"
 
 DATABASES = {
     "default": {

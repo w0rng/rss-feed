@@ -12,8 +12,10 @@ services:
     command: >
       sh -c "python manage.py migrate &&
              python manage.py collectstatic --noinput --clear &&
-             gunicorn core.wsgi --workers 5 --bind 0.0.0.0:8000"
+             gunicorn settings.wsgi --workers 5 --bind 0.0.0.0:8000"
     restart: unless-stopped
+    env_file:
+      - .env
     depends_on:
       - db
 
@@ -23,6 +25,8 @@ services:
       dockerfile: docker/core.dockerfile
     command: [ "python", "manage.py", "update_feeds" ]
     restart: unless-stopped
+    env_file:
+      - .env
     depends_on:
       - db
       - web
@@ -31,6 +35,14 @@ services:
     build:
       context: .
       dockerfile: docker/summarizer.dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+
+  newspaper:
+    build:
+      context: .
+      dockerfile: docker/newspaper.dockerfile
     restart: unless-stopped
     env_file:
       - .env

@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from os import environ
 from urllib.parse import urlparse
 
 import requests
@@ -50,7 +51,8 @@ class Article(models.Model):
             logger.warning(f"not found paragraphs for {article.link}")
             return
 
-        newspaper = requests.get(f"https://functions.yandexcloud.net/d4e09pp7rcsn53mvf23j?url={article.link}").json()
+        newspaper_url = environ["NEWSPAPER_URL"]
+        newspaper = requests.get(f"{newspaper_url}?url={article.link}").json()
 
         tags = [urlparse(article.link).netloc]
 
@@ -81,7 +83,8 @@ class Article(models.Model):
 
     @classmethod
     def _get_paragraphs(cls, article) -> tuple[list[str] | None, str | None]:
-        summery_raw = requests.get(f"https://functions.yandexcloud.net/d4et1vtk7puk3hij7th2?url={article.link}").json()
+        summarizer_url = environ["SUMMARIZER_URL"]
+        summery_raw = requests.get(f"{summarizer_url}?url={article.link}").json()
         if summery := summery_raw.get("paragraphs"):
             return summery, summery_raw.get("title")
 
