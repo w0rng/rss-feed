@@ -27,6 +27,14 @@ services:
       - db
       - web
 
+  summarizer:
+    build:
+      context: .
+      dockerfile: docker/summarizer.dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+
   db:
     image: postgres:12.1-alpine
     environment:
